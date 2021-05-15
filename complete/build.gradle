@@ -14,7 +14,7 @@ buildscript {
         classpath "gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:2.1"
         classpath "org.grails.plugins:hibernate5:7.0.0"
         classpath "com.bertramlabs.plugins:asset-pipeline-gradle:3.0.11"
-        classpath 'com.bmuschko:gradle-docker-plugin:6.0.0' // <1>
+        classpath 'com.bmuschko:gradle-docker-plugin:7.0.0' // <1>
     }
 }
 //end::buildscript[]
@@ -158,3 +158,17 @@ task buildImage(type: DockerBuildImage, dependsOn: createDockerfile) { // <6>
     images.add(dockerTag)
 }
 //end::buildImage[]
+
+//tag::pushImage[]
+docker {
+    registryCredentials {
+        username = project.findProperty("DOCKER_USERNAME")
+        password = project.findProperty("DOCKER_PASSWORD")
+    }
+}
+task pushImage(type: DockerPushImage, dependsOn: buildImage) {
+    description = 'Push Docker image to repository'
+    group = 'Docker'
+    images.add(dockerTag)
+}
+//end::pushImage[]
